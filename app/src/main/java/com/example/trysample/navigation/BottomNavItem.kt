@@ -26,7 +26,7 @@ sealed class BottomNavItem(
     )
     object Stats : BottomNavItem(
         route = "stats",
-        title = "Stats",
+        title = "market",
         icon = Icons.Default.BarChart
     )
     object Profile : BottomNavItem(

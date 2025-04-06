@@ -104,4 +104,5 @@ dependencies {
     //LiveData Runtime dependancy
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

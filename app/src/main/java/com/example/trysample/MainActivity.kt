@@ -8,32 +8,74 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.trysample.navigation.BottomNavItem
+import com.example.trysample.navigation.*
 import com.example.trysample.ui.screens.*
 import com.example.trysample.ui.theme.TrySampleTheme
 import com.example.trysample.weatherpart.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        val weatherViewModel= ViewModelProvider(this)[WeatherViewModel::class.java]
+        
+        var keepSplashScreen = true
+        splashScreen.setKeepOnScreenCondition { keepSplashScreen }
+        
+        val weatherViewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
+        
         setContent {
             TrySampleTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(weatherViewModel)
+                    var showSplash by remember { mutableStateOf(true) }
+                    var isAuthenticated by remember { mutableStateOf(false) }
+                    
+                    if (showSplash) {
+                        SplashScreen(
+                            onSplashComplete = {
+                                showSplash = false
+                                keepSplashScreen = false
+                            }
+                        )
+                    } else {
+                        val navController = rememberNavController()
+                        
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (isAuthenticated) MAIN_ROUTE else AUTH_ROUTE
+                        ) {
+                            // Auth Flow
+                            authNavigation(
+                                navController = navController,
+                                onAuthSuccess = {
+                                    isAuthenticated = true
+                                    navController.navigate(MAIN_ROUTE) {
+                                        popUpTo(AUTH_ROUTE) { inclusive = true }
+                                    }
+                                }
+                            )
+                            
+                            // Main App Flow
+                            composable(MAIN_ROUTE) {
+                                MainScreen(weatherViewModel)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+const val MAIN_ROUTE = "main"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,12 +129,10 @@ fun MainScreen(viewModel: WeatherViewModel) {
                 Text("Scan Screen")
             }
             composable(BottomNavItem.Stats.route) {
-                // TODO: Implement StatsScreen
-                Text("Stats Screen")
+                MarketScreen()
             }
             composable(BottomNavItem.Profile.route) {
-                // TODO: Implement ProfileScreen
-                Text("Profile Screen")
+                ProfileScreen()
             }
         }
     }
