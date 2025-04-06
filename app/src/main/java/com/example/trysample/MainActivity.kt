@@ -14,30 +14,46 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.trysample.auth.AuthViewModel
 import com.example.trysample.navigation.*
 import com.example.trysample.ui.screens.*
 import com.example.trysample.ui.theme.TrySampleTheme
 import com.example.trysample.weatherpart.WeatherViewModel
+import com.google.firebase.FirebaseApp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
+/**
+ * MainActivity is the entry point of the application.
+ * It handles the splash screen, authentication state, and main navigation.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install the splash screen before calling super.onCreate()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         
+        // Initialize Firebase
+        FirebaseApp.initializeApp(this)
+        
+        // Flag to control when to remove the splash screen
         var keepSplashScreen = true
         splashScreen.setKeepOnScreenCondition { keepSplashScreen }
         
+        // Initialize the WeatherViewModel for weather data
         val weatherViewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
         
+        // Set up the Compose UI
         setContent {
             TrySampleTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // State variables for splash screen and authentication
                     var showSplash by remember { mutableStateOf(true) }
                     var isAuthenticated by remember { mutableStateOf(false) }
                     
+                    // Show the splash screen if showSplash is true
                     if (showSplash) {
                         SplashScreen(
                             onSplashComplete = {
@@ -46,26 +62,41 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
+                        // Initialize the navigation controller
                         val navController = rememberNavController()
                         
+                        // Set up the main navigation graph
                         NavHost(
                             navController = navController,
+                            // Start with auth flow if not authenticated, otherwise start with main app
                             startDestination = if (isAuthenticated) MAIN_ROUTE else AUTH_ROUTE
                         ) {
-                            // Auth Flow
+                            // Authentication navigation graph
                             authNavigation(
                                 navController = navController,
                                 onAuthSuccess = {
+                                    // Update authentication state and navigate to main app
                                     isAuthenticated = true
                                     navController.navigate(MAIN_ROUTE) {
+                                        // Remove the auth graph from the back stack
                                         popUpTo(AUTH_ROUTE) { inclusive = true }
                                     }
                                 }
                             )
                             
-                            // Main App Flow
+                            // Main app navigation graph
                             composable(MAIN_ROUTE) {
-                                MainScreen(weatherViewModel)
+                                MainScreen(
+                                    weatherViewModel = weatherViewModel,
+                                    onSignOut = {
+                                        // Handle sign out
+                                        isAuthenticated = false
+                                        navController.navigate(AUTH_ROUTE) {
+                                            // Remove the main graph from the back stack
+                                            popUpTo(MAIN_ROUTE) { inclusive = true }
+                                        }
+                                    }
+                                )
                             }
                         }
                     }
@@ -75,15 +106,33 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Constant for the main app route
+ */
 const val MAIN_ROUTE = "main"
 
+/**
+ * MainScreen composable that provides the main UI of the application.
+ * It includes a bottom navigation bar and the main content area.
+ * 
+ * @param viewModel The WeatherViewModel that provides weather data to the app.
+ * @param onSignOut Callback function that is invoked when the user signs out.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: WeatherViewModel) {
+fun MainScreen(
+    weatherViewModel: WeatherViewModel,
+    onSignOut: () -> Unit
+) {
+    // Get the AuthViewModel
+    val authViewModel: AuthViewModel = viewModel()
+    
+    // Initialize the navigation controller for the main app
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    // Define the bottom navigation items
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Weather,
@@ -92,6 +141,7 @@ fun MainScreen(viewModel: WeatherViewModel) {
         BottomNavItem.Profile
     )
 
+    // Set up the main screen with a bottom navigation bar
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -101,9 +151,12 @@ fun MainScreen(viewModel: WeatherViewModel) {
                         label = { Text(item.title) },
                         selected = currentRoute == item.route,
                         onClick = {
+                            // Navigate to the selected item if it's not already selected
                             if (currentRoute != item.route) {
                                 navController.navigate(item.route) {
+                                    // Pop up to the start destination of the graph
                                     popUpTo(navController.graph.startDestinationId)
+                                    // Avoid building up a large stack of destinations
                                     launchSingleTop = true
                                 }
                             }
@@ -113,26 +166,39 @@ fun MainScreen(viewModel: WeatherViewModel) {
             }
         }
     ) { paddingValues ->
+        // Set up the navigation host for the main app screens
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Home.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+            // Home screen
             composable(BottomNavItem.Home.route) {
                 HomeScreen()
             }
+            // Weather screen with weather data from the view model
             composable(BottomNavItem.Weather.route) {
-                WeatherScreen(viewModel)
+                WeatherScreen(weatherViewModel)
             }
+            // Scan screen (placeholder)
             composable(BottomNavItem.Scan.route) {
                 // TODO: Implement ScanScreen
                 Text("Scan Screen")
             }
+            // Market screen (previously Stats screen)
             composable(BottomNavItem.Stats.route) {
                 MarketScreen()
             }
+            // Profile screen with sign out functionality
             composable(BottomNavItem.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(
+                    onSignOut = {
+                        // Call the AuthViewModel to sign out
+                        authViewModel.signOut()
+                        // Call the callback to update UI state
+                        onSignOut()
+                    }
+                )
             }
         }
     }

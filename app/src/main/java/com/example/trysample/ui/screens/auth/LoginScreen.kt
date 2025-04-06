@@ -26,6 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.trysample.R
 
+/**
+ * LoginScreen composable that provides a user interface for users to log in to their account.
+ * 
+ * @param onLoginClick Callback function that is invoked when the user clicks the login button.
+ *                     It receives the user's email and password.
+ * @param onSignUpClick Callback function that is invoked when the user clicks the sign up link.
+ *                      This typically navigates the user to the sign up screen.
+ * @param modifier Optional modifier for customizing the layout of the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -33,13 +42,16 @@ fun LoginScreen(
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State variables to track user input and UI state
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     
+    // Get the focus manager to handle keyboard focus
     val focusManager = LocalFocusManager.current
     
+    // Main column layout for the login screen
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -48,7 +60,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo and App Name
+        // App logo and branding section
         Image(
             painter = painterResource(id = R.drawable.ic_splash_logo),
             contentDescription = "App Logo",
@@ -57,6 +69,7 @@ fun LoginScreen(
                 .padding(8.dp)
         )
         
+        // Screen title
         Text(
             text = "Welcome Back",
             style = MaterialTheme.typography.headlineMedium,
@@ -64,6 +77,7 @@ fun LoginScreen(
             modifier = Modifier.padding(vertical = 16.dp)
         )
         
+        // Screen description
         Text(
             text = "Login to continue using CropScan",
             style = MaterialTheme.typography.bodyLarge,
@@ -72,7 +86,7 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Email Field
+        // Email input field
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -96,7 +110,7 @@ fun LoginScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Password Field
+        // Password input field with visibility toggle
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -129,7 +143,7 @@ fun LoginScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Forgot Password
+        // Forgot Password link
         TextButton(
             onClick = { /* Handle forgot password */ },
             modifier = Modifier.align(Alignment.End)
@@ -137,7 +151,7 @@ fun LoginScreen(
             Text("Forgot Password?")
         }
 
-        // Login Button
+        // Login button with loading state
         Button(
             onClick = {
                 isLoading = true
@@ -150,6 +164,7 @@ fun LoginScreen(
             enabled = email.isNotBlank() && password.isNotBlank() && !isLoading
         ) {
             if (isLoading) {
+                // Show loading indicator when the login process is in progress
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
@@ -159,7 +174,7 @@ fun LoginScreen(
             }
         }
 
-        // Sign Up Link
+        // Sign Up link for new users
         Row(
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.Center,

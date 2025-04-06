@@ -25,9 +25,16 @@ import com.example.trysample.ui.theme.HealthyGreen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * ProfileScreen composable that displays the user's profile information and settings.
+ * 
+ * @param onSignOut Callback function that is invoked when the user clicks the sign out button.
+ * @param modifier Optional modifier for customizing the layout of the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    onSignOut: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -46,10 +53,11 @@ fun ProfileScreen(
                     text = "CropScan",
                     style = MaterialTheme.typography.titleLarge
                 )
-                IconButton(onClick = { /* Handle settings */ }) {
+                // Sign out button
+                IconButton(onClick = onSignOut) {
                     Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings"
+                        imageVector = Icons.Default.Logout,
+                        contentDescription = "Sign Out"
                     )
                 }
             }

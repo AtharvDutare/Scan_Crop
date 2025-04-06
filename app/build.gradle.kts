@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" // this version matches your Kotlin version
     id ("kotlin-kapt")
+    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -53,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.auth)
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
     implementation(composeBom)
 

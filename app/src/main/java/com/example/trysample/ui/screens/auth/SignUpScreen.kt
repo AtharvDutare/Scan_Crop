@@ -21,6 +21,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.trysample.R
 
+/**
+ * SignUpScreen composable that provides a user interface for new users to create an account.
+ * 
+ * @param onSignUpClick Callback function that is invoked when the user clicks the sign up button.
+ *                      It receives the user's full name, email, password, and confirm password.
+ * @param onLoginClick Callback function that is invoked when the user clicks the login link.
+ *                     This typically navigates the user back to the login screen.
+ * @param modifier Optional modifier for customizing the layout of the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
@@ -28,6 +37,7 @@ fun SignUpScreen(
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State variables to track user input and UI state
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -36,8 +46,10 @@ fun SignUpScreen(
     var showConfirmPassword by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     
+    // Get the focus manager to handle keyboard focus
     val focusManager = LocalFocusManager.current
     
+    // Main column layout for the sign up screen
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -45,7 +57,7 @@ fun SignUpScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo and App Name
+        // App logo and branding section
         Image(
             painter = painterResource(id = R.drawable.ic_splash_logo),
             contentDescription = "App Logo",
@@ -54,6 +66,7 @@ fun SignUpScreen(
                 .padding(8.dp)
         )
         
+        // Screen title
         Text(
             text = "Create Account",
             style = MaterialTheme.typography.headlineMedium,
@@ -61,6 +74,7 @@ fun SignUpScreen(
             modifier = Modifier.padding(vertical = 16.dp)
         )
         
+        // Screen description
         Text(
             text = "Sign up to start managing your farm with CropScan",
             style = MaterialTheme.typography.bodyLarge,
@@ -69,7 +83,7 @@ fun SignUpScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Full Name Field
+        // Full Name input field
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },
@@ -93,7 +107,7 @@ fun SignUpScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Email Field
+        // Email input field
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -117,7 +131,7 @@ fun SignUpScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Password Field
+        // Password input field with visibility toggle
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -150,7 +164,7 @@ fun SignUpScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Confirm Password Field
+        // Confirm Password input field with visibility toggle
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -183,7 +197,7 @@ fun SignUpScreen(
                 .padding(vertical = 8.dp)
         )
 
-        // Sign Up Button
+        // Sign Up button with loading state
         Button(
             onClick = {
                 isLoading = true
@@ -201,6 +215,7 @@ fun SignUpScreen(
                      !isLoading
         ) {
             if (isLoading) {
+                // Show loading indicator when the sign up process is in progress
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
@@ -210,7 +225,7 @@ fun SignUpScreen(
             }
         }
 
-        // Login Link
+        // Login link for existing users
         Row(
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.Center,
