@@ -88,7 +88,10 @@ fun HomeScreen(
                 
                 // Scan Now Button
                 Button(
-                    onClick = onScanClick,
+                    onClick = { 
+                        // Navigate to Agent screen instead of Scan screen
+                        navController.navigate(BottomNavItem.Agent.route)
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black

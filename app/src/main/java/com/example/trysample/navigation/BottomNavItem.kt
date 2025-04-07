@@ -19,10 +19,10 @@ sealed class BottomNavItem(
         title = "Weather",
         icon = Icons.Default.WbSunny
     )
-    object Scan : BottomNavItem(
-        route = "scan",
-        title = "Scan",
-        icon = Icons.Default.CameraAlt
+    object Agent : BottomNavItem(
+        route = "agent",
+        title = "Agent",
+        icon = Icons.Default.SmartToy
     )
     object Stats : BottomNavItem(
         route = "stats",

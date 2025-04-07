@@ -22,6 +22,8 @@ import com.example.trysample.weatherpart.WeatherViewModel
 import com.google.firebase.FirebaseApp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trysample.auth.AuthState
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 /**
  * MainActivity is the entry point of the application.
@@ -148,7 +150,7 @@ fun MainScreen(
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Weather,
-        BottomNavItem.Scan,
+        BottomNavItem.Agent,
         BottomNavItem.Stats,
         BottomNavItem.Profile
     )
@@ -192,10 +194,25 @@ fun MainScreen(
                 WeatherScreen(weatherViewModel)
             }
             
-            // Scan screen (placeholder)
-            composable(BottomNavItem.Scan.route) {
-                // TODO: Implement ScanScreen
-                Text("Scan Screen")
+            // Agent screen
+            composable(BottomNavItem.Agent.route) {
+                AgentScreen(navController = navController)
+            }
+            
+            // Agent Detail Screen
+            composable(
+                route = "agent_detail/{agentId}",
+                arguments = listOf(
+                    navArgument("agentId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val agentId = backStackEntry.arguments?.getString("agentId")
+                AgentDetailScreen(
+                    navController = navController,
+                    agentId = agentId
+                )
             }
             
             // Market screen (previously Stats screen)
