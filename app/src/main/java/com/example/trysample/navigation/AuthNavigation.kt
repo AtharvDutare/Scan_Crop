@@ -112,7 +112,7 @@ fun NavGraphBuilder.authNavigation(
                     }
                     
                     // Create user with email and password
-                    authViewModel.createUserWithEmailAndPassword(email, password)
+                    authViewModel.createUserWithEmailAndPassword(fullName, email, password)
                 },
                 // Callback for when the user wants to go back to the login screen
                 onLoginClick = {

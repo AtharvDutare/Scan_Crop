@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,31 +65,35 @@ fun SplashScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = 40.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_splash_logo),
-                contentDescription = "Logo",
+            Box(
                 modifier = Modifier
-                    .size(200.dp)
-                    .scale(scaleAnim.value)
-                    .alpha(alphaAnim.value)
-            )
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                // Logo
+                Image(
+                    painter = painterResource(id = R.drawable.scancrophighresolutionlogo),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scale(scaleAnim.value)
+                        .alpha(alphaAnim.value),
+                    contentScale = ContentScale.Inside
+                )
+            }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
-            Text(
-                text = "CropScan",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.alpha(alphaAnim.value)
-            )
-            
+            // Tagline
             Text(
                 text = "Smart Farming Solutions",
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.alpha(alphaAnim.value)
             )
         }

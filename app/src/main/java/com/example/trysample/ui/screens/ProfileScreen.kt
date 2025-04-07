@@ -1,5 +1,6 @@
 package com.example.trysample.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,11 @@ import com.example.trysample.R
 import com.example.trysample.ui.theme.HealthyGreen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.trysample.auth.AuthViewModel
+import com.google.firebase.auth.FirebaseUser
+
+private const val TAG = "ProfileScreen"
 
 /**
  * ProfileScreen composable that displays the user's profile information and settings.
@@ -37,6 +43,17 @@ fun ProfileScreen(
     onSignOut: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    // Get the AuthViewModel to access user information
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUser by authViewModel.currentUser.collectAsState()
+
+    // Debug log to check user information
+    LaunchedEffect(currentUser) {
+        Log.d(TAG, "Current user: ${currentUser?.uid}")
+        Log.d(TAG, "Display name: ${currentUser?.displayName}")
+        Log.d(TAG, "Email: ${currentUser?.email}")
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -77,7 +94,7 @@ fun ProfileScreen(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Profile Image
+                    // Profile Image with first letter of name
                     Box(
                         modifier = Modifier
                             .size(80.dp)
@@ -85,23 +102,46 @@ fun ProfileScreen(
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile Picture",
-                            modifier = Modifier.size(40.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        val displayName = currentUser?.displayName
+                        if (displayName.isNullOrEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier.size(40.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Text(
+                                text = displayName.first().toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     // Profile Details
                     Column {
+                        val displayName = currentUser?.displayName
+                        val email = currentUser?.email
+                        
                         Text(
-                            text = "Aman patel",
+                            text = when {
+                                !displayName.isNullOrEmpty() -> displayName
+                                !email.isNullOrEmpty() -> email.substringBefore('@')
+                                else -> "User"
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
+                        if (!email.isNullOrEmpty()) {
+                            Text(
+                                text = email,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         Text(
                             text = "Farm Owner",
                             style = MaterialTheme.typography.bodyMedium,

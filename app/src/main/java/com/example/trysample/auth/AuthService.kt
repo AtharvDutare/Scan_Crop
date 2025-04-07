@@ -3,6 +3,7 @@ package com.example.trysample.auth
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.channels.awaitClose
@@ -20,14 +21,34 @@ class AuthService {
     /**
      * Creates a new user account with email and password
      * 
+     * @param fullName User's full name
      * @param email User's email address
      * @param password User's password
      * @return Result containing the FirebaseUser on success or an exception on failure
      */
-    suspend fun createUserWithEmailAndPassword(email: String, password: String): Result<FirebaseUser> {
+    suspend fun createUserWithEmailAndPassword(
+        fullName: String,
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
         return try {
+            // First create the user
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            Result.success(result.user!!)
+            val user = result.user!!
+            
+            // Update the user's display name
+            val profileUpdates = userProfileChangeRequest {
+                displayName = fullName
+            }
+            
+            // Wait for the profile update to complete
+            user.updateProfile(profileUpdates).await()
+            
+            // Reload the user to get the updated profile
+            user.reload().await()
+            
+            // Return the updated user
+            Result.success(auth.currentUser!!)
         } catch (e: Exception) {
             Log.e(TAG, "createUserWithEmail:failure", e)
             Result.failure(e)

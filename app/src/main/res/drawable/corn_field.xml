@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#8BC34A"
+        android:pathData="M0,0h200v200h-200z"/>
+
+    <!-- Corn stalks -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M20,80c0,0 10,-40 30,-40s30,40 30,40v120h-60z"/>
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M80,100c0,0 10,-40 30,-40s30,40 30,40v100h-60z"/>
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M140,90c0,0 10,-40 30,-40s30,40 30,40v110h-60z"/>
+
+    <!-- Corn leaves -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M30,60c-20,10 -10,30 0,30s20,-20 0,-30z"/>
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M70,60c20,10 10,30 0,30s-20,-20 0,-30z"/>
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M90,80c-20,10 -10,30 0,30s20,-20 0,-30z"/>
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M130,80c20,10 10,30 0,30s-20,-20 0,-30z"/>
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M150,70c-20,10 -10,30 0,30s20,-20 0,-30z"/>
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M190,70c20,10 10,30 0,30s-20,-20 0,-30z"/>
+
+    <!-- Corn cobs -->
+    <path
+        android:fillColor="#FFF176"
+        android:pathData="M40,100l10,-20l10,20z"/>
+    <path
+        android:fillColor="#FFF176"
+        android:pathData="M100,120l10,-20l10,20z"/>
+    <path
+        android:fillColor="#FFF176"
+        android:pathData="M160,110l10,-20l10,20z"/>
+</vector> 

@@ -47,15 +47,17 @@ class AuthViewModel : ViewModel() {
     /**
      * Creates a new user account with email and password
      * 
+     * @param fullName User's full name
      * @param email User's email address
      * @param password User's password
      */
-    fun createUserWithEmailAndPassword(email: String, password: String) {
+    fun createUserWithEmailAndPassword(fullName: String, email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             
-            authService.createUserWithEmailAndPassword(email, password)
+            authService.createUserWithEmailAndPassword(fullName, email, password)
                 .onSuccess { user ->
+                    _currentUser.value = user
                     _authState.value = AuthState.SignedIn(user)
                 }
                 .onFailure { exception ->

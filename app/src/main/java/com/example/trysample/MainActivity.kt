@@ -21,6 +21,7 @@ import com.example.trysample.ui.theme.TrySampleTheme
 import com.example.trysample.weatherpart.WeatherViewModel
 import com.google.firebase.FirebaseApp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.trysample.auth.AuthState
 
 /**
  * MainActivity is the entry point of the application.
@@ -126,6 +127,17 @@ fun MainScreen(
 ) {
     // Get the AuthViewModel
     val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+    
+    // Handle authentication state changes
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.SignedOut -> {
+                onSignOut()
+            }
+            else -> {} // Handle other states if needed
+        }
+    }
     
     // Initialize the navigation controller for the main app
     val navController = rememberNavController()
@@ -151,12 +163,9 @@ fun MainScreen(
                         label = { Text(item.title) },
                         selected = currentRoute == item.route,
                         onClick = {
-                            // Navigate to the selected item if it's not already selected
                             if (currentRoute != item.route) {
                                 navController.navigate(item.route) {
-                                    // Pop up to the start destination of the graph
                                     popUpTo(navController.graph.startDestinationId)
-                                    // Avoid building up a large stack of destinations
                                     launchSingleTop = true
                                 }
                             }
@@ -166,7 +175,6 @@ fun MainScreen(
             }
         }
     ) { paddingValues ->
-        // Set up the navigation host for the main app screens
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Home.route,
@@ -174,29 +182,32 @@ fun MainScreen(
         ) {
             // Home screen
             composable(BottomNavItem.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    navController = navController
+                )
             }
+            
             // Weather screen with weather data from the view model
             composable(BottomNavItem.Weather.route) {
                 WeatherScreen(weatherViewModel)
             }
+            
             // Scan screen (placeholder)
             composable(BottomNavItem.Scan.route) {
                 // TODO: Implement ScanScreen
                 Text("Scan Screen")
             }
+            
             // Market screen (previously Stats screen)
             composable(BottomNavItem.Stats.route) {
                 MarketScreen()
             }
+            
             // Profile screen with sign out functionality
             composable(BottomNavItem.Profile.route) {
                 ProfileScreen(
                     onSignOut = {
-                        // Call the AuthViewModel to sign out
                         authViewModel.signOut()
-                        // Call the callback to update UI state
-                        onSignOut()
                     }
                 )
             }
